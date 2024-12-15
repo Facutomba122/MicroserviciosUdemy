@@ -1,12 +1,15 @@
 package org.facundopinazo.springcloud.msv.courses.msvc_courses.controllers;
 
+import jakarta.validation.Valid;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.Course;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.servicies.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,12 +35,19 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Course newCourses) {
+    public ResponseEntity<?> create(@Valid @RequestBody Course newCourses, BindingResult result) {
+        if (result.hasErrors()){
+            return jsonValidation(result);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(newCourses));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody Course updatedCourses, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody Course updatedCourses,BindingResult result , @PathVariable Long id) {
+        if (result.hasErrors()){
+            return jsonValidation(result);
+        }
+
         if (updatedCourses != null && id != null) {
             Optional<Course> optionalCourses = courseService.findById(id);
             if (optionalCourses.isPresent()) {
@@ -60,5 +70,13 @@ public class CourseController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private static ResponseEntity<HashMap<String, String>> jsonValidation(BindingResult result) {
+        HashMap<String, String> errors = new HashMap<String, String>();
+        result.getFieldErrors().forEach((err) -> {
+            errors.put(err.getField(), err.getDefaultMessage());
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 }
