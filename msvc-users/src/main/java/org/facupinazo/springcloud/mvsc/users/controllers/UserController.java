@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.apache.catalina.connector.Response;
 import org.facupinazo.springcloud.mvsc.users.models.entity.Users;
 import org.facupinazo.springcloud.mvsc.users.services.UserService;
+import org.facupinazo.springcloud.mvsc.users.utils.MyExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,12 @@ public class UserController {
         if (result.hasErrors()){
             return jsonValidation(result);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(newUsers));
+        try {
+            Users response = userService.save(newUsers);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (MyExceptions.EmailAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

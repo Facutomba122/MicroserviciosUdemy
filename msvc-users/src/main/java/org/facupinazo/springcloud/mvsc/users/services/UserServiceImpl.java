@@ -2,6 +2,7 @@ package org.facupinazo.springcloud.mvsc.users.services;
 
 import org.facupinazo.springcloud.mvsc.users.models.entity.Users;
 import org.facupinazo.springcloud.mvsc.users.repositories.UserRepository;
+import org.facupinazo.springcloud.mvsc.users.utils.MyExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,9 @@ public class UserServiceImpl implements  UserService {
     @Override
     @Transactional
     public Users save(Users newUsers) {
+        if (repository.findByEmail(newUsers.getEmail()).isPresent()) {
+            throw new MyExceptions.EmailAlreadyExistsException();
+        }
        return repository.save(newUsers);
     }
 
