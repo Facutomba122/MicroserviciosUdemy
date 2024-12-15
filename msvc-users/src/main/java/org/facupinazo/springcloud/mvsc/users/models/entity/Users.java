@@ -1,6 +1,8 @@
 package org.facupinazo.springcloud.mvsc.users.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name="users")
@@ -9,9 +11,14 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     private String name;
+
+    @NotEmpty
     private String password;
 
+    @NotEmpty
+    @Email
     @Column(unique = true)
     private String email;
 

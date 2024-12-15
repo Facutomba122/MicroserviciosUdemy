@@ -1,13 +1,16 @@
 package org.facupinazo.springcloud.mvsc.users.controllers;
 
+import jakarta.validation.Valid;
 import org.apache.catalina.connector.Response;
 import org.facupinazo.springcloud.mvsc.users.models.entity.Users;
 import org.facupinazo.springcloud.mvsc.users.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +36,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Users newUsers){
+    public ResponseEntity<?> create(@Valid @RequestBody Users newUsers, BindingResult result){
+        if (result.hasErrors()){
+            return jsonValidation(result);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(newUsers));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody Users updatedUsers, @PathVariable Long id){
+    public ResponseEntity<?> update(@RequestBody Users updatedUsers, BindingResult result, @PathVariable Long id){
+        if (result.hasErrors()){
+            return jsonValidation(result);
+        }
         if (updatedUsers != null && id != null){
             Optional<Users> optionalUsers = userService.findId(id);
             if (optionalUsers.isPresent()){
@@ -69,6 +78,14 @@ public class UserController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    private static ResponseEntity<HashMap<String, String>> jsonValidation(BindingResult result) {
+        HashMap<String, String> errors = new HashMap<String, String>();
+        result.getFieldErrors().forEach((err) -> {
+            errors.put(err.getField(), err.getDefaultMessage());
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 }
 

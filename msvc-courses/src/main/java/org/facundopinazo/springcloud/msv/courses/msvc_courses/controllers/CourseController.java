@@ -42,7 +42,7 @@ public class CourseController {
             Optional<Course> optionalCourses = courseService.findById(id);
             if (optionalCourses.isPresent()) {
                 Course oldCourse = optionalCourses.get();
-
+                oldCourse.setName(updatedCourses.getName());
                 courseService.save(oldCourse);
                 return ResponseEntity.ok().body(oldCourse);
             }
