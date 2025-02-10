@@ -31,7 +31,7 @@ public class UserServiceImpl implements  UserService {
     @Override
     @Transactional
     public Users save(Users newUsers) {
-        if (repository.findByEmail(newUsers.getEmail()).isPresent()) {
+        if (!newUsers.getEmail().isEmpty()  || repository.findByEmail(newUsers.getEmail()).isPresent()) {
             throw new MyExceptions.EmailAlreadyExistsException();
         }
        return repository.save(newUsers);
