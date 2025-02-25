@@ -1,6 +1,8 @@
 package org.facundopinazo.springcloud.msv.courses.msvc_courses.servicies;
 
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.Course;
+import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.CourseUser;
+import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.User;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.repositories.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,4 +40,61 @@ public class CourseServiceImpl implements CourseService{
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public Optional<User> assignUser(User user, Long id) {
+        Optional<Course> findCourseOptional = repository.findById(id);
+        if (findCourseOptional.isPresent()){
+            User userMsvc = userClientRest.detail(user.getId());
+            Course course = findCourseOptional.get();
+
+            CourseUser courseUser = new CourseUser();
+            courseUser.setUserId(userMsvc.getId());
+            course.addCourseUser(courseUser);
+            repository.save(course);
+
+            return Optional.of(userMsvc);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public Optional<User> createUser(User newUser, Long courseId) {
+        Optional<Course> findCourseOptional = repository.findById(id);
+        if (findCourseOptional.isPresent()){
+            User userMsvc = userClientRest.create(newUser);
+            Course course = findCourseOptional.get();
+
+            CourseUser courseUser = new CourseUser();
+            courseUser.setUserId(userMsvc.getId());
+            course.addCourseUser(courseUser);
+            repository.save(course);
+
+            return Optional.of(userMsvc);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public Optional<User> deleteUser(User deletedUser, Long courseId) {
+        Optional<Course> findCourseOptional = repository.findById(courseId);
+        if (findCourseOptional.isPresent()){
+            User userMsvc = userClientRest.detail(deletedUser.getId());
+            Course course = findCourseOptional.get();
+
+            CourseUser courseUser = new CourseUser();
+            courseUser.setUserId(userMsvc.getId());
+            course.removeCourseUser(courseUser);
+            repository.save(course);
+            return Optional.of(userMsvc);
+        }
+
+        return Optional.empty();
+    }
+
+
 }
