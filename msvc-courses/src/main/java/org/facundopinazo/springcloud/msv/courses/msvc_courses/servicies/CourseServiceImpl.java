@@ -1,5 +1,6 @@
 package org.facundopinazo.springcloud.msv.courses.msvc_courses.servicies;
 
+import org.facundopinazo.springcloud.msv.courses.msvc_courses.clients.UserClientRest;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.Course;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.CourseUser;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.User;
@@ -16,6 +17,8 @@ public class CourseServiceImpl implements CourseService{
 
     @Autowired
     CourseRepository repository;
+    @Autowired
+    private UserClientRest userClientRest;
 
     @Override
     @Transactional(readOnly = true)
@@ -27,6 +30,10 @@ public class CourseServiceImpl implements CourseService{
     @Transactional(readOnly = true)
     public Optional<Course> findById(Long id) {
         return repository.findById(id);
+    }
+
+    public Optional<List<User>> findUsersByCourseId(Long id){
+        
     }
 
     @Override
@@ -63,7 +70,7 @@ public class CourseServiceImpl implements CourseService{
     @Override
     @Transactional
     public Optional<User> createUser(User newUser, Long courseId) {
-        Optional<Course> findCourseOptional = repository.findById(id);
+        Optional<Course> findCourseOptional = repository.findById(courseId);
         if (findCourseOptional.isPresent()){
             User userMsvc = userClientRest.create(newUser);
             Course course = findCourseOptional.get();
@@ -95,6 +102,7 @@ public class CourseServiceImpl implements CourseService{
 
         return Optional.empty();
     }
+
 
 
 }

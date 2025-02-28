@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,11 @@ public class UserController {
         return userService.listar();
     }
 
+    @GetMapping("/list-all")
+    public List<Users> listAllByIds(@RequestParam ArrayList<Long> ids){
+        return userService.listAllByIds(ids);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> detalle(@PathVariable Long id){
         Optional<Users> optionalUsers = userService.findId(id);
@@ -38,6 +45,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Users newUsers, BindingResult result){
+
         if (result.hasErrors()){
             return jsonValidation(result);
         }
@@ -46,6 +54,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (MyExceptions.EmailAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e){
+            System.out.println("ERROR AL CREAR USUARIO: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
         }
     }
 
