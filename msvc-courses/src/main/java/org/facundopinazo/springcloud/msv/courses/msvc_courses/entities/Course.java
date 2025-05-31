@@ -1,7 +1,7 @@
 package org.facundopinazo.springcloud.msv.courses.msvc_courses.entities;
 
 import jakarta.persistence.*;
-import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.User;
+import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.UserDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +19,15 @@ public class Course {
     private List<CourseUser> courseUsers = new ArrayList<CourseUser>();
 
     @Transient
-    private List<User> users = new ArrayList<User>();;
+    private List<UserDTO> userDTOS = new ArrayList<UserDTO>();;
 
 
-    public List<User> getUsers() {
-        return users;
+    public List<UserDTO> getUsers() {
+        return userDTOS;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setUsers(List<UserDTO> userDTOS) {
+        this.userDTOS = userDTOS;
     }
 
     public List<CourseUser> getCourseUsers() {

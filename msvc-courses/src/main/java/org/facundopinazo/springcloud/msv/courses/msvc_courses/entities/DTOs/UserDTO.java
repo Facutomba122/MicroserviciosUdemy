@@ -1,6 +1,6 @@
 package org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs;
 
-public class User {
+public class UserDTO {
 
     private Long id;
     private String name;

@@ -24,13 +24,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<Users> listar(){
-        return userService.listar();
+    public ResponseEntity<List<Users>> listar(){
+        return ResponseEntity.ok(userService.listar());
     }
 
     @GetMapping("/list-all")
-    public List<Users> listAllByIds(@RequestParam ArrayList<Long> ids){
-        return userService.listAllByIds(ids);
+    public ResponseEntity<List<Users>> listAllByIds(@RequestParam ArrayList<Long> ids){
+        return ResponseEntity.ok(userService.listAllByIds(ids));
     }
 
     @GetMapping("/{id}")

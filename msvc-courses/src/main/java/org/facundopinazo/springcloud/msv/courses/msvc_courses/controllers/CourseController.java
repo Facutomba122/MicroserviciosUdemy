@@ -3,7 +3,7 @@ package org.facundopinazo.springcloud.msv.courses.msvc_courses.controllers;
 import feign.FeignException;
 import jakarta.validation.Valid;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.Course;
-import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.User;
+import org.facundopinazo.springcloud.msv.courses.msvc_courses.entities.DTOs.UserDTO;
 import org.facundopinazo.springcloud.msv.courses.msvc_courses.servicies.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,10 +43,10 @@ public class CourseController {
     }
 
     @PutMapping("/assing-user/{courseId}")
-    public ResponseEntity<?> assignUser(@RequestBody User user, @PathVariable Long courseId){
-        Optional<User> OUser;
+    public ResponseEntity<?> assignUser(@RequestBody UserDTO userDTO, @PathVariable Long courseId){
+        Optional<UserDTO> OUser;
         try {
-            OUser = courseService.assignUser(user, courseId);
+            OUser = courseService.assignUser(userDTO, courseId);
         } catch (FeignException e){
             System.out.println("Se produjo un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -60,10 +60,10 @@ public class CourseController {
     }
 
     @PostMapping("/create-user/{courseId}")
-    public ResponseEntity<?> createUser(@RequestBody User newUser, @PathVariable Long courseId){
-        Optional<User> OUser;
+    public ResponseEntity<?> createUser(@RequestBody UserDTO newUserDTO, @PathVariable Long courseId){
+        Optional<UserDTO> OUser;
         try {
-            OUser = courseService.createUser(newUser, courseId);
+            OUser = courseService.createUser(newUserDTO, courseId);
         } catch (FeignException e){
             System.out.println("Se produjo un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -77,10 +77,10 @@ public class CourseController {
     }
 
     @DeleteMapping("/delete-user/{courseId}")
-    public ResponseEntity<?> deleteUser(@RequestBody User deleteUser, @PathVariable Long courseId){
-        Optional<User> OUser;
+    public ResponseEntity<?> deleteUser(@RequestBody UserDTO deleteUserDTO, @PathVariable Long courseId){
+        Optional<UserDTO> OUser;
         try {
-            OUser = courseService.deleteUser(deleteUser, courseId);
+            OUser = courseService.deleteUser(deleteUserDTO, courseId);
         } catch (FeignException e){
             System.out.println("Se produjo un error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -119,6 +119,18 @@ public class CourseController {
         if (oCourse.isPresent()) {
             courseService.delete(id);
             return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/user-per-course/{idCourse}")
+    public ResponseEntity<?> listUserPerCourse(@PathVariable Long idCourse){
+        if (idCourse == null){
+            ResponseEntity.badRequest().build();
+        }
+        Optional<Course> oListUser = courseService.findUsersByCourseId(idCourse);
+        if (oListUser.isPresent()){
+            return ResponseEntity.ok().body(oListUser.get());
         }
         return ResponseEntity.notFound().build();
     }
