@@ -1,10 +1,10 @@
 package org.facupinazo.springcloud.mvsc.users.services;
 
+import org.facupinazo.springcloud.mvsc.users.clients.CourseClient;
 import org.facupinazo.springcloud.mvsc.users.models.entity.Users;
 import org.facupinazo.springcloud.mvsc.users.repositories.UserRepository;
 import org.facupinazo.springcloud.mvsc.users.utils.MyExceptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +15,9 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements  UserService {
+
+    @Autowired
+    CourseClient courseClient;
 
     @Autowired
     private UserRepository repository;
@@ -43,13 +46,18 @@ public class UserServiceImpl implements  UserService {
     @Override
     @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+            courseClient.deleteUserFromCourse(id);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         System.out.println("Delete succesfull");
     }
 
 
     @Override
-    public List<Users> listAllByIds(ArrayList<Long> ids) {
+    public List listAllByIds(ArrayList<Long> ids) {
         try {
             return (List<Users>) repository.findAllById(ids);
         } catch (ClassCastException e){

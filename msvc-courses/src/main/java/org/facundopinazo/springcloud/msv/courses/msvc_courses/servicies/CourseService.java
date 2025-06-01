@@ -12,6 +12,7 @@ public interface CourseService {
     Optional<Course> findUsersByCourseId(Long id);
     Course save(Course course);
     void delete(Long id);
+    void deleteUserFromCourse(Long id);
     Optional<UserDTO> assignUser(UserDTO userDTO, Long courseId);
     Optional<UserDTO> createUser(UserDTO newUserDTO, Long courseId);
     Optional<UserDTO> deleteUser(UserDTO deletedUserDTO, Long courseId);
